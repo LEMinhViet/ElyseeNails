@@ -245,6 +245,44 @@
             return CP_Customizer.createControl(options);
         };
 
+        CP_Customizer.createControl.number = function (id, container, params) {
+            var type = 'kirki-number',
+                $container = $('<li class="customize-control customize-control-kirki customize-control-' + type + '" />');
+
+            if (container) {
+                $(container).append($container);
+            }
+
+            var options = {
+                id: id || '',
+                updater: function (value) {
+                    if (this.controlContainer.find('[data-cp-link]').data().selectize) {
+                        this.controlContainer.find('[data-cp-link]').data().selectize.setValue(value);
+                    }
+                },
+                type: type,
+                onAttach: function (value) {
+                    var thisInput = this.controlContainer.find('input');
+                    thisInput.spinner("value", value);
+                },
+                container: $container,
+                params: _.extend(
+                    params,
+                    {
+                        choices: {
+                            min: params.min,
+                            max: params.max,
+                            step: params.step
+                        },
+                        value: params.value || ""
+                    }
+                ),
+                value: params.value || ""
+            };
+
+            return CP_Customizer.createControl(options);
+        };
+
         CP_Customizer.createControl.image = function (id, container, params) {
             var type = 'image',
                 $container = $('<li class="customize-control customize-control-kirki customize-control-' + type + '" />');

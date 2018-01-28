@@ -11,6 +11,10 @@
 	z-index: 10;
 }
 
+.about-10 .image-group-2-img.first-xs.last-sm,.about-4 .image-group-2-img.first-xs.last-sm {
+	margin-bottom: 12%;
+}
+
 .blog-section .card {
 	height: 100%;
 	padding: 0;

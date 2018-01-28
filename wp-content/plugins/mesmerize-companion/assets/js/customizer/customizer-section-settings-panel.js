@@ -518,6 +518,20 @@
 
                 this.addToControlsList(itemOptionsControl);
 
+                var itemsAlign = CP_Customizer.createControl.select(
+                    this.getPrefixed('items_align'),
+                    $container,
+                    {
+                        value: '',
+                        label: 'Items align',
+                        choices: {
+                            'items-align-default': 'Default',
+                            'start-sm': 'Left',
+                            'center-sm': 'Center',
+                            'end-sm': 'Right'
+                        }
+                    });
+                this.addToControlsList(itemsAlign);
 
                 var textAlign = CP_Customizer.createControl.select(
                     this.getPrefixed('text_align'),
@@ -559,17 +573,23 @@
                 this.enable();
 
 
-                var textAlign = this.getControl('text_align');
-                var textAlignClasses = ['content-left-sm', 'content-center-sm', 'content-right-sm'];
-                var currentTextAlign = CP_Customizer.utils.nodeMatchingClasses(row, textAlignClasses, true);
+                var textAlign = this.getControl('text_align'),
+                    textAlignClasses = ['content-left-sm', 'content-center-sm', 'content-right-sm'],
+                    currentTextAlign = CP_Customizer.utils.nodeMatchingClasses(row, textAlignClasses, true),
+
+                    itemsAlign = this.getControl('items_align'),
+                    itemsAlignClasses = ['start-sm', 'center-sm', 'end-sm'],
+                    currentItemsAlign = CP_Customizer.utils.nodeMatchingClasses(row, itemsAlignClasses, true);
 
                 var sectionExports = CP_Customizer.getSectionExports(section);
                 var canAlignItems = _.isUndefined(sectionExports.canAlignRowItemsContent) || sectionExports.canAlignRowItemsContent;
 
                 if (canAlignItems) {
                     textAlign.show();
+                    itemsAlign.show();
                 } else {
                     textAlign.hide();
+                    itemsAlign.hide();
                 }
 
                 textAlign.attachWithSetter(
@@ -579,6 +599,18 @@
                             row.removeClass(oldValue);
                         }
                         if (value.trim() && value !== 'content-align-default') {
+                            row.addClass(value);
+                        }
+                    }
+                );
+
+                itemsAlign.attachWithSetter(
+                    currentItemsAlign || 'items-align-default',
+                    function (value, oldValue) {
+                        if (oldValue.trim()) {
+                            row.removeClass(oldValue);
+                        }
+                        if (value.trim() && value !== 'items-align-default') {
                             row.addClass(value);
                         }
                     }
@@ -683,7 +715,7 @@
 
                 var showInfosInOneColumn = CP_Customizer.createControl.checkbox(
                     this.getPrefixed('show-inline-info'),
-                    $groupEl,
+                    $container,
                     'Show form controls on one column'
                 );
 

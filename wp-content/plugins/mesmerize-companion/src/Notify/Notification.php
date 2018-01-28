@@ -11,11 +11,11 @@ class Notification
     const NOTIFICATION_ACTION_PREFIX = "cp_notification_notice_";
 
     private $name;
-    
+
     private $start = '*';
     private $end = '*';
     private $after = null;
-    
+
     private $dismissible = true;
     private $type = "info";
     private $active_callback = null;
@@ -36,6 +36,17 @@ class Notification
         if ($this->canShow()) {
 
             $this->addNotificationView();
+        }
+    }
+
+    // php 5.3 compatibility
+    public function __get($name)
+    {
+        if (property_exists($this, $name)) {
+            return $this->$name;
+        } else {
+            throw new \Exception("Property {$name} does not exists in class Notification", 1);
+
         }
     }
 

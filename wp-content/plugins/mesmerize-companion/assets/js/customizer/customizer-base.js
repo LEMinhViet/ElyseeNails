@@ -76,6 +76,12 @@
 })(jQuery);
 
 (function ($, root) {
+
+    wp.customize.bind("save-request-params", function (query) {
+        query.customize_post_id = CP_Customizer.preview.data().pageID;
+        return query;
+    });
+
     var CP_Customizer = {
             events: {
                 "PREVIEW_LOADED": "PREVIEW_LOADED",
@@ -301,7 +307,7 @@
 
             log: function (name, data, type) {
 
-                if (!CP_Customizer.options('SCRIPT_DEBUG', false)) {
+                if (!CP_Customizer.options('SCRIPT_DEBUG', false) && !top.SCRIPT_DEBUG) {
                     return;
                 }
 
@@ -1425,6 +1431,18 @@
                 }
 
                 return this.parseShortcode($node.attr('data-content-shortcode'));
+            },
+
+            nodeContainsShortcode: function ($node, tag) {
+                var $containers = $node.find('[data-content-shortcode]');
+
+                for (var i = 0; i < $containers.length; i++) {
+                    if (CP_Customizer.nodeWrapsShortcode($containers.eq(i), tag)) {
+                        return true;
+                    }
+                }
+
+                return false;
             },
 
             renderNodeShortcodes: function ($node) {
@@ -2915,6 +2933,11 @@
 
                     var cui = this.getTextElementCUI();
 
+                    if (!cui) {
+                        CP_Customizer.logError('TinyMCE Editor not found');
+                        return;
+                    }
+
                     cui.hidden = false;
                     cui.target = node;
                     cui.bodyElement = node;
@@ -2947,6 +2970,12 @@
 
                 hideTextElementCUI: function () {
                     var cui = this.getTextElementCUI();
+
+                    if (!cui) {
+                        CP_Customizer.logError('TinyMCE Editor not found');
+                        return;
+                    }
+
 
                     if (cui.theme && cui.theme.panel) {
                         cui.theme.panel.getEl().style.display = "none";
@@ -3060,7 +3089,11 @@
 
                 getTextElementCUI: function () {
                     var editorID = 'cp-tinymce-cui-editor';
-                    var editor = root.CP_Customizer.preview.frame().tinymce.get(editorID);
+                    var editor = root.CP_Customizer.preview.frame().tinymce ? root.CP_Customizer.preview.frame().tinymce.get(editorID) : 'cp-editor-not-found';
+
+                    if (editor === 'cp-editor-not-found') {
+                        return undefined;
+                    }
 
                     var self = this;
                     if (!editor) {
@@ -3082,7 +3115,7 @@
                             "theme": "modern",
                             "skin": "lightgray",
                             // "plugins": 'autoresize',
-                            "toolbar": 'fontselect addwebfont font-weight font-size-popup | italic underline strikethrough alignment font-color-popup | removeformat',
+                            "toolbar": 'fontselect addwebfont font-weight font-size-popup | italic underline strikethrough superscript subscript alignment  font-color-popup | removeformat',
                             "font_formats": this.getFonts().toTinyMCEFormat(),
                             "paste_as_text": true,
                             "forced_root_block": false,
@@ -3333,7 +3366,9 @@
                         return;
                     }
 
-                    CP_Customizer.preview.getTextElementCUI().fire('blur');
+                    if (CP_Customizer.preview.getTextElementCUI()) {
+                        CP_Customizer.preview.getTextElementCUI().fire('blur');
+                    }
 
 
                 }

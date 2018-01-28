@@ -23,9 +23,9 @@ class Companion
 
     public function __construct($root = null)
     {
-        $theme = wp_get_theme();
+        $theme           = wp_get_theme();
         $this->themeName = $theme->get('Name');
-        $this->path = $root;
+        $this->path      = $root;
 
         // check for current theme in customize.php
         if ($previewedTheme = $this->checkForThemePreviewdInCustomizer()) {
@@ -34,14 +34,14 @@ class Companion
         } else {
             // current theme is a child theme
             if ($this->theme->get('Template')) {
-                $template = $this->theme->get('Template');
+                $template          = $this->theme->get('Template');
                 $templateThemeData = wp_get_theme($template);
-                $this->themeSlug =  $templateThemeData->get('TextDomain');
-                $this->themeName =   $templateThemeData->get('Name');
+                $this->themeSlug   = $templateThemeData->get('TextDomain');
+                $this->themeName   = $templateThemeData->get('Name');
             } else {
-                $this->themeSlug =  $this->theme->get('TextDomain');
+                $this->themeSlug = $this->theme->get('TextDomain');
             }
-           
+
         }
 
         if ( ! $this->isCurrentThemeSupported()) {
@@ -81,20 +81,20 @@ class Companion
             $theme = $input_vars['customize_theme'];
         }
 
-        $themeData = wp_get_theme($theme);
-        $textDomain  =  $themeData->get('TextDomain');
-        $name  =  $themeData->get('Name');
+        $themeData  = wp_get_theme($theme);
+        $textDomain = $themeData->get('TextDomain');
+        $name       = $themeData->get('Name');
 
-        if($themeData->get('Template')){
-            $parentThemeData  = wp_get_theme($themeData->get('Template'));
-            $textDomain =  $parentThemeData->get('TextDomain');
-             $name  =  $parentThemeData->get('Name');
+        if ($themeData->get('Template')) {
+            $parentThemeData = wp_get_theme($themeData->get('Template'));
+            $textDomain      = $parentThemeData->get('TextDomain');
+            $name            = $parentThemeData->get('Name');
         }
 
 
         return array(
-            'TextDomain'=>$textDomain,
-            'Name' =>  $name
+            'TextDomain' => $textDomain,
+            'Name'       => $name,
         );
     }
 
@@ -161,7 +161,84 @@ class Companion
             });
 
         });
+
+        // add post meta revisions (to revert from a page editable back to normal);
+        $this->addMaintainableMetaToRevision();
     }
+
+    public function getMaintainableKeysLabelPair($fields = array())
+    {
+        $fields = array_merge($fields, array(
+            'is_' . $this->themeSlug . '_front_page'        => 'Is ' . $this->themeName . ' Front Page',
+            'is_' . $this->themeSlug . '_maintainable_page' => 'Is ' . $this->themeName . ' FMaintainable Page',
+        ));
+
+        return $fields;
+    }
+
+    public function getMaintainableMetaKeys()
+    {
+        $keys = $this->getMaintainableKeysLabelPair();
+
+        return array_keys($keys);
+
+    }
+
+
+    public function addMaintainableMetaToRevision()
+    {
+        $keys = $this->getMaintainableMetaKeys();
+        foreach ($keys as $key) {
+            add_filter("_wp_post_revision_field_{$key}", array($this, 'getMetaFieldRevision'), 10, 2);
+        }
+
+//        add_filter('_wp_post_revision_fields', array($this, 'getMaintainableKeysLabelPair'));
+        add_action('save_post', array($this, 'saveMetaFieldRevision'), 10, 2);
+        add_action('wp_restore_post_revision', array($this, 'restoreMetaFieldRevision'), 10, 2);
+
+    }
+
+    public function getMetaFieldRevision($value, $field)
+    {
+        global $revision;
+
+        return get_metadata('post', $revision->ID, $field, true);
+
+    }
+
+    public function saveMetaFieldRevision($post_id, $post)
+    {
+        if ($parent_id = wp_is_post_revision($post_id)) {
+
+            $parent = get_post($parent_id);
+
+            $keys = $this->getMaintainableMetaKeys();
+            foreach ($keys as $key) {
+                $meta_value = get_post_meta($parent->ID, $key, true);
+                if ($meta_value) {
+                    add_metadata('post', $post_id, $key, $meta_value);
+                }
+            }
+        }
+    }
+
+    public function restoreMetaFieldRevision($post_id, $revision_id)
+    {
+        if ($parent_id = wp_is_post_revision($revision_id)) {
+
+            $keys = $this->getMaintainableMetaKeys();
+            foreach ($keys as $key) {
+                $meta_value = get_metadata('post', $revision_id, $key, true);
+
+                if ($meta_value) {
+                    update_post_meta($post_id, $key, $meta_value);
+                } else {
+                    delete_post_meta($post_id, $key);
+                }
+            }
+        }
+    }
+
 
     public function checkNotifications()
     {
@@ -408,6 +485,8 @@ class Companion
         if (function_exists('pll_get_post') && function_exists('pll_default_language')) {
             $slug      = pll_default_language('slug');
             $defaultID = pll_get_post($post_id, $slug);
+            $sourceID  = isset($_REQUEST['from_post']) ? $_REQUEST['from_post'] : null;
+            $defaultID = $defaultID ? $defaultID : $sourceID;
 
             if ($defaultID && ($defaultID !== $post_id)) {
                 $result = call_user_func($callback, $defaultID);
@@ -417,7 +496,17 @@ class Companion
         global $sitepress;
         if ($sitepress) {
             $defaultLanguage = $sitepress->get_default_language();
-            $defaultID       = icl_object_id($post_id, 'post_' . $post->post_type, true, $defaultLanguage);
+            global $wpdb;
+
+            $sourceTRID = isset($_REQUEST['trid']) ? $_REQUEST['trid'] : null;
+            $trid       = $sitepress->get_element_trid($post_id);
+            $trid       = $trid ? $trid : $sourceTRID;
+            $defaultID  = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT element_id FROM {$wpdb->prefix}icl_translations WHERE trid=%d AND language_code=%s",
+                    $trid,
+                    $defaultLanguage));
+
 
             if ($defaultID && ($defaultID !== $post_id)) {
                 $result = call_user_func($callback, $defaultID);
@@ -815,9 +904,43 @@ class Companion
     }
 
 
+    public function wrapPostContentInSection($post_id)
+    {
+        $post    = get_post($post_id);
+        $content = $post->post_content;
+
+        if (trim($content)) {
+
+            if (strip_tags($content) === $content) {
+                $content = "<p>{$content}</p>";
+            }
+
+            $content = "<div data-id='initial-content-section' data-export-id='initial-content-section' data-label='Initial Content' id='initial-content-section' class='content-section'>\n" .
+                       "   <div class='gridContainer'>\n" .
+                       "     <div class='row'>\n\n" .
+                       "        <div class='col-xs-12 col-sm-12'>" .
+                       "                {$content}\n" .
+                       "          </div>\n" .
+                       "      </div>\n" .
+                       "  </div>\n" .
+                       "</div>\n";
+
+            if ( ! has_action('pre_post_update', 'wp_save_post_revision')) {
+                add_action('pre_post_update', 'wp_save_post_revision');
+            }
+
+            wp_update_post(array(
+                'ID'           => $post_id,
+                'post_content' => $content,
+            ));
+        }
+    }
+
+
     public function openPageInCustomizer()
     {
         $post_id = intval($_REQUEST['page']);
+        $toMark  = isset($_REQUEST['mark_as_editable']);
 
         $post = get_post($post_id);
 
@@ -834,13 +957,13 @@ class Companion
                     'post_title' => $title,
                     'post_name'  => $new_slug // do your thing here
                 ));
-
             }
 
             $isMarked = get_post_meta($post_id, 'is_' . $this->themeSlug . '_maintainable_page', true);
 
-            if ( ! intval($isMarked)) {
+            if ( ! intval($isMarked) && $toMark) {
                 update_post_meta($post_id, 'is_' . $this->themeSlug . '_maintainable_page', "1");
+                $this->wrapPostContentInSection($post_id);
                 $template = get_post_meta($post_id, '_wp_page_template', true);
                 if ( ! $template || $template === "default") {
                     update_post_meta($post_id, '_wp_page_template', apply_filters('mesmerize_maintainable_default_template', "full-width-page.php"));
@@ -849,12 +972,30 @@ class Companion
 
         }
 
+        $url = $this->get_page_link($post_id);
 
         ?>
-        <?php echo admin_url('customize.php') ?>?url=<?php echo esc_url(get_page_link($post_id)) ?>
+        <?php echo admin_url('customize.php') ?>?url=<?php echo esc_url($url) ?>
         <?php
 
         exit;
+    }
+
+    public function get_page_link($post_id)
+    {
+        global $sitepress;
+        if ($sitepress) {
+            $url = get_page_link($post_id);
+            $args = array('element_id' => $post_id, 'element_type' => 'page' );
+            $language_code = apply_filters( 'wpml_element_language_code', null, $args );
+            $url = apply_filters( 'wpml_permalink', $url, $language_code );
+        }
+
+        if (!$url) {
+            $url = get_page_link($post_id);
+        }
+
+        return $url;
     }
 
     public function shortcodeRefresh()

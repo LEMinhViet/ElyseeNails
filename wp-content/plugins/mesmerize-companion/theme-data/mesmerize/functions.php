@@ -1,7 +1,9 @@
 <?php
 
+require_once $this->themeDataPath("/updates.php");
 require_once $this->themeDataPath("/custom-style.php");
 require_once $this->themeDataPath("/options/overlap.php");
+
 
 add_filter('mesmerize_can_show_demo_content', "__return_true");
 add_filter('mesmerize_show_inactive_plugin_infos', "__return_false");
@@ -71,6 +73,7 @@ function mesmerize_companion_latest_news($attrs)
             'columns'        => "4",
             'tablet_columns' => "6",
             'item_class'     => 'card y-move bordered',
+            'posts'          => '',
         ),
         $attrs
     );
@@ -80,13 +83,13 @@ function mesmerize_companion_latest_news($attrs)
     $cols        = intval($atts['columns']);
     $tablet_cols = intval($atts['tablet_columns']);
 
-    $post_numbers = 12 / $cols;
+    $post_numbers = ($atts['posts']) ? $atts['posts'] : 12 / $cols;
 
     add_filter('excerpt_length', 'mesmerize_companion_latest_news_excerpt_length');
     add_filter('excerpt_more', 'mesmerize_companion_latest_excerpt_more');
 
     ?>
-    <div class="row">
+    <div class="row center-sm content-left-sm">
         <?php
         $recentPosts->query('posts_per_page=' . $post_numbers . ';post_status=publish;post_type=post;ignore_sticky_posts=1;');
         while ($recentPosts->have_posts()):
@@ -98,8 +101,8 @@ function mesmerize_companion_latest_news($attrs)
             <div id="post-<?php the_ID(); ?>" class="col-sm-<?php echo $tablet_cols; ?> col-md-<?php echo $cols; ?> space-bottom space-bottom-xs">
                 <div class="post-content <?php echo $atts['item_class']; ?>">
                     <?php mesmerize_print_post_thumb(); ?>
-                    <div class="col-padding">
-                        <h3 class="post-title">
+                    <div class="col-padding col-padding-xs">
+                        <h3 class="post-title space-bottom-small">
                             <a href="<?php the_permalink(); ?>" rel="bookmark">
                                 <?php the_title(); ?>
                             </a>
@@ -111,7 +114,7 @@ function mesmerize_companion_latest_news($attrs)
                     </div>
                 </div>
             </div>
-            <?php
+        <?php
         endwhile;
         wp_reset_postdata();
         ?>

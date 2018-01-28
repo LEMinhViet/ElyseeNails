@@ -51,7 +51,7 @@ class Template
             } else {
                 $uid         = uniqid(md5($shortcode));
                 $commentText = "cp-shortcode:{$uid}:{$shortcode}";
-                $output      = "<!--  $commentText -->" . $output . "<!--  $commentText -->";
+                $output      = "<!--$commentText-->" . $output . "<!--$commentText-->";
             }
         }
 
@@ -73,7 +73,7 @@ class Template
                 $shortcode = hex2bin($shortcodeBin);
                 $shortcode = esc_attr($shortcode);
 
-                $shortcodeAttr = " {$attr}-shortcode=\"{$shortcode}\" ";
+                $shortcodeAttr = " data-shortcode-{$attr}=\"{$shortcode}\" ";
 
                 return $shortcodeAttr . $match;
             }, $content);

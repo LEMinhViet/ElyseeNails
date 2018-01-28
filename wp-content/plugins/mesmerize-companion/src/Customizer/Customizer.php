@@ -255,11 +255,14 @@ class Customizer
             <?php $makeMaintainable = uniqid('cb_') . "_MakePageMaintainable"; ?>
 
             <script>
-                <?php echo $makeMaintainable ?> = function cp_open_page_in_customizer() {
+                var <?php echo $makeMaintainable ?> =
+
+                function () {
                     var page = top.CP_Customizer.preview.data().pageID;
                     jQuery.post(ajaxurl, {
                         action: 'cp_open_in_customizer',
-                        page: page
+                        page: page,
+                        mark_as_editable: true
                     }).done(function (response) {
                         window.location = response.trim();
                     });
@@ -270,6 +273,7 @@ class Customizer
                 <div class="description customize-section-description">
                     <span><?php _e('This page is not marked as editable in Customizer', 'cloudpress-companion'); ?>.</span>
                     <a onclick="<?php echo $makeMaintainable ?>()" class="reiki-needed edit-this-page available-item-hover-button"><?php _e('Make this page editable in customizer', 'cloudpress-companion'); ?></a>
+                    <span style="font-size: 11px; padding-top: 14px;line-height: 1.2;"><?php _e('A page revision will be created so you can go back if the button was pressed by mistake', 'cloudpress-companion'); ?>.</span>
                 </div>
             </div>
 
@@ -351,18 +355,18 @@ class Customizer
             $vars['post_type'] = get_post_type();
 
             $previewData = apply_filters('cloudpress\customizer\preview_data', array(
-                "version"             => $self->companion()->getCustomizerData('version'),
-                "slug"                => $self->companion()->getThemeSlug(),
-                "maintainable"        => $self->companion()->isMaintainable(),
-                "isFrontPage"         => $self->companion()->isFrontPage(),
-                "canEditInCustomizer" => $self->companion()->canEditInCustomizer(),
-                "pageID"              => $self->companion()->getCurrentPageId(),
-                "queryVars"           => $vars,
-                "hasFrontPage"        => ($self->companion()->getFrontPage() !== null),
-                "siteURL"             => get_home_url(),
-                "pageURL"             => $post ? get_page_link() : null,
-                "includesURL"         => includes_url(),
-                "mod_defaults"        => apply_filters('cloudpress\customizer\mod_defaults', array()),
+                "version"                => $self->companion()->getCustomizerData('version'),
+                "slug"                   => $self->companion()->getThemeSlug(),
+                "maintainable"           => $self->companion()->isMaintainable(),
+                "isFrontPage"            => $self->companion()->isFrontPage(),
+                "canEditInCustomizer"    => $self->companion()->canEditInCustomizer(),
+                "pageID"                 => $self->companion()->getCurrentPageId(),
+                "queryVars"              => $vars,
+                "hasFrontPage"           => ($self->companion()->getFrontPage() !== null),
+                "siteURL"                => get_home_url(),
+                "pageURL"                => $post ? get_page_link() : null,
+                "includesURL"            => includes_url(),
+                "mod_defaults"           => apply_filters('cloudpress\customizer\mod_defaults', array()),
                 "isWoocommerceInstalled" => class_exists('WooCommerce'),
             ));
             ?>

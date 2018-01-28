@@ -8,7 +8,7 @@ div.cp-tinymce-inline.mce-tinymce-inline {
 }
 
 .mce-btn button {
-    padding: 4px 8px !important;
+    /*     padding: 4px 8px !important; */
     font-size: 14px !important;
     line-height: 20px !important;
     cursor: pointer !important;
@@ -22,12 +22,12 @@ div.cp-tinymce-inline.mce-tinymce-inline {
 }
 
 .mce-listbox button {
-    padding-right: 0px !important;
+    /*     padding-right: 0px !important; */
 }
 
 .mce-btn .mce-caret {
-    margin-top: 8px !important;
-    margin-left: 10px !important;
+    /* margin-top: 8px !important; */
+    /* margin-left: 10px !important; */
 }
 
 .mce-tinymce-inline {
@@ -38,7 +38,7 @@ div.cp-tinymce-inline.mce-tinymce-inline {
 
 .mce-tinymce-inline button, .mce-tinymce-inline .button {
     background-color: transparent !important;
-    min-width: 0 -px !important;
+    min-width: 0px !important;
     line-height: 18px !important;
     letter-spacing: 0px !important;
 }
@@ -62,13 +62,13 @@ div.cp-tinymce-inline.mce-tinymce-inline {
 }
 
 .mce-colorbutton [role="presentation"] {
-    padding-right: 0px !important;
+    /*     padding-right: 0px !important; */
 }
 
 .mce-colorbutton [role="presentation"] + button {
-    padding-left: 0px !important;
+    /*     padding-left: 0px !important; */
 }
 
 .mce-colorbutton [role="presentation"] + button .mce-caret {
-    margin-left: 0px !important;
+    /*     margin-left: 0px !important; */
 }
