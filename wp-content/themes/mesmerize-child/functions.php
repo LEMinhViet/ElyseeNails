@@ -10,4 +10,13 @@
         wp_get_theme()->get('Version')
     );
   }
+
+
+  function change_footer_copyright_text($copyright) {
+    $copyrightText = __('Le site utilise WordPress et Mesmerize');
+
+    return $copyrightText;
+  }
+
+  add_filter('mesmerize_get_footer_copyright', 'change_footer_copyright_text');
 ?>

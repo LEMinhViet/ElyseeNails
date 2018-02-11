@@ -359,7 +359,7 @@ msgid "info@yourmail.com"
 msgstr ""
 
 #: inc/templates-functions.php:188
-msgid "Built using WordPress and the Mesmerize Theme"
+msgid "Merci WordPress et Mesmerize"
 msgstr ""
 
 #: inc/templates-functions.php:190

@@ -29,6 +29,14 @@
   max-width: 100% !important;
 }
 
+#about-1.content-section-spacing {
+  padding-bottom: 10px !important;
+}
+
+.image-group-bottom-3-img .center-img {
+  width: 38% !important;
+}
+
 .wpgmp_iw_content {
   text-align: center;
 }
@@ -45,6 +53,11 @@
   -moz-column-gap: 1em;
   -webkit-column-gap: 1em;
   column-gap: 1em;
+}
+
+/* Footer section */
+.footer-contact-boxes .col-sm-3 {
+  border-left: 0px !important;
 }
 
 @media only screen and (max-width : 1920px) {

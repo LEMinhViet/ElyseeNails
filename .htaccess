@@ -2,11 +2,11 @@
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteBase /ElyseeNails/
+RewriteBase /ElyseesNails/
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /ElyseeNails/index.php [L]
+RewriteRule . /ElyseesNails/index.php [L]
 </IfModule>
 
 # END WordPress
