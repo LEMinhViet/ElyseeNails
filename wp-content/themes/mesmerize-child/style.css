@@ -41,6 +41,56 @@
   text-align: center;
 }
 
+/* Prestation section */
+#features-1 > div.gridContainer > .row.spaced-cols > div {
+  margin-bottom: 0px;
+  padding-right: 3rem;
+}
+
+#features-1 > div.gridContainer > .row.spaced-cols > div > div {
+  margin-bottom: 1rem;
+}
+
+#features-1 > div.gridContainer > .row.spaced-cols > div > div > .col-sm {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#features-1 > div.gridContainer > .row.spaced-cols > div > div > .col-sm > h5 {
+  flex-basis: 100%;
+  letter-spacing: 1px;
+  font-size: 15px;
+  line-height: 20px;
+}
+
+#features-1 > div.gridContainer > .row.spaced-cols > div > div > .col-sm > p {
+  box-sizing: border-box;
+  flex-grow: 1;
+  width: 50%;
+  margin-top: 0px;
+}
+
+#features-1 > div.gridContainer > .row.spaced-cols > div > div > .col-sm > h6 {
+  box-sizing: border-box;
+  flex-grow: 1;
+  width: 25%;
+  margin-top: 0px;
+  text-align: center;
+}
+
+#features-1 > div.gridContainer > .row.spaced-cols > div > div > .col-sm > h4 {
+  box-sizing: border-box;
+  flex-grow: 1;
+  width: 25%;
+  margin-top: 0px;
+  font-size: 16px;
+  font-weight: normal;
+  color: #8E9DAE;
+  line-height: 1.5rem;
+  letter-spacing: 0px;
+  text-align: right;
+}
+
 /* Gallery section */
 .gallery-image {
   margin-bottom: 10px;
