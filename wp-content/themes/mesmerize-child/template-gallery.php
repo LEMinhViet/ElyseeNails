@@ -28,10 +28,10 @@ get_header(); ?>
       $sample_images = array();
 
       foreach ($images as $image) {
-        if (strpos($image->post_title, 'boutique') !== false) {
+        if (strpos(strtolower($image->post_title), 'boutique') !== false) {
           array_push($boutique_images, $image);
         }
-        else if (strpos($image->post_title, 'product') !== false) {
+        else if (strpos(strtolower($image->post_title), 'product') !== false) {
           array_push($product_images, $image);
         }
         else {

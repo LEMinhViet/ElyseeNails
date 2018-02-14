@@ -12,6 +12,21 @@
  Text Domain:  mesmerize-child
 */
 
+h1.hero-title {
+  text-transform: uppercase;
+  font-family: "Open Sans";
+  font-weight: 600;
+  font-size: 3rem;
+  background-image: -webkit-linear-gradient(left, #fff, #fde9f1); /* For Chrome and Safari */
+  background-image:    -moz-linear-gradient(left, #fff, #fde9f1); /* For old Fx (3.6 to 15) */
+  background-image:     -ms-linear-gradient(left, #fff, #fde9f1); /* For pre-releases of IE 10*/
+  background-image:      -o-linear-gradient(left, #fff, #fde9f1); /* For old Opera (11.1 to 12.0) */
+  background-image:         linear-gradient(to right, #fff, #fde9f1); /* Standard syntax; must be last */
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
 .wpgmp_iw_content {
   white-space: pre;
   color: black;

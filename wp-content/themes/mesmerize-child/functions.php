@@ -13,7 +13,7 @@
 
 
   function change_footer_copyright_text($copyright) {
-    $copyrightText = __('Le site utilise WordPress et Mesmerize');
+    $copyrightText = __('Le site utilise WordPress et Mesmerize.<br>L\'équipe Elysées Nails Paris');
 
     return $copyrightText;
   }
