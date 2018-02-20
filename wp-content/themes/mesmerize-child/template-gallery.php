@@ -65,7 +65,7 @@ get_header(); ?>
       echo $boutique_content;
     ?>
 
-    <div id="boutique-container" class="gallery-masonry-container">
+    <div id="boutique-container" class="gallery-boutique-masonry-container">
       <?php if ( $boutique_images ) {
         foreach($boutique_images as $image) {?>
           <img class="gallery-image" src="<?php echo wp_get_attachment_image_src($image->ID, 'full')[0]; ?>" />
