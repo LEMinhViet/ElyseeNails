@@ -153,5 +153,7 @@ function mesmerize_add_slideshow_scripts($inner = false)
         'animateFirst'       => false,
     );
 
+    print(" NOOOOOOOOO 2 ");
+
     wp_localize_script($textDomain . '-backstretch', 'mesmerize_backstretch', $mesmerize_jssettings);
 }
